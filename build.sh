@@ -13,7 +13,7 @@ else
     git clone https://github.com/karelzak/util-linux.git
 fi
 
-apt-get install -y asciidoctor
+apt-get install -y asciidoctor bison flex gettext
 
 CPUS=$(cat /proc/cpuinfo | grep processor | wc -l)
 RELEASE_DIR=`pwd`
