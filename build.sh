@@ -36,9 +36,9 @@ GITVERSION=$(./tools/git-version-gen)
 make all -j $CPUS
 rm -f irqtop lsirq lsblk
 # staticly build to avoid libsmartcols.so.X conflict
-gcc sys-utils/irqtop.c sys-utils/irq-common.c .libs/libsmartcols.a -g -o irqtop -I include -I libsmartcols/src -DHAVE_NANOSLEEP -DHAVE_LOCALE_H -DHAVE_WIDECHAR -DHAVE_NCURSES_H -DHAVE_FSYNC -DPACKAGE_STRING="0.1" -D_GNU_SOURCE -lncurses
-gcc sys-utils/lsirq.c sys-utils/irq-common.c .libs/libsmartcols.a -g -o lsirq -I include -I libsmartcols/src -DHAVE_NANOSLEEP -DHAVE_LOCALE_H -DHAVE_WIDECHAR -DHAVE_NCURSES_H -DHAVE_FSYNC -DPACKAGE_STRING="0.1" -D_GNU_SOURCE -lncurses
-gcc misc-utils/lsblk.c misc-utils/lsblk-properties.c misc-utils/lsblk-devtree.c misc-utils/lsblk-mnt.c .libs/libmount.a .libs/libsmartcols.a .libs/libuuid.a .libs/libblkid.a -g -o lsblk -I include -I libblkid/src -I libsmartcols/src -I libmount/src -DHAVE_NANOSLEEP -DHAVE_LOCALE_H -DHAVE_WIDECHAR -DHAVE_NCURSES_H -DHAVE_FSYNC -DPACKAGE_STRING="0.1" -D_GNU_SOURCE -lncurses
+gcc sys-utils/irqtop.c sys-utils/irq-common.c .libs/libsmartcols.a -g -o irqtop -I include -I libsmartcols/src -DHAVE_NANOSLEEP -DHAVE_LOCALE_H -DHAVE_WIDECHAR -DHAVE_NCURSES_H -DHAVE_FSYNC -DPACKAGE_STRING="0.1" -D_GNU_SOURCE -DHAVE_DECL_CPU_ALLOC -lncurses
+gcc sys-utils/lsirq.c sys-utils/irq-common.c .libs/libsmartcols.a -g -o lsirq -I include -I libsmartcols/src -DHAVE_NANOSLEEP -DHAVE_LOCALE_H -DHAVE_WIDECHAR -DHAVE_NCURSES_H -DHAVE_FSYNC -DPACKAGE_STRING="0.1" -D_GNU_SOURCE -DHAVE_DECL_CPU_ALLOC -lncurses
+gcc misc-utils/lsblk.c misc-utils/lsblk-properties.c misc-utils/lsblk-devtree.c misc-utils/lsblk-mnt.c .libs/libmount.a .libs/libsmartcols.a .libs/libuuid.a .libs/libblkid.a -g -o lsblk -I include -I libblkid/src -I libsmartcols/src -I libmount/src -DHAVE_NANOSLEEP -DHAVE_LOCALE_H -DHAVE_WIDECHAR -DHAVE_NCURSES_H -DHAVE_FSYNC -DPACKAGE_STRING="0.1" -D_GNU_SOURCE -DHAVE_DECL_CPU_ALLOC -lncurses
 
 # start to copy target files
 cd $RELEASE_DIR
