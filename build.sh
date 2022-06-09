@@ -1,6 +1,21 @@
 #!/bin/bash
 set -xe
 
+ISSUENET=`cat /etc/issue.net`
+CONTROLDEP=
+
+case $ISSUENET in
+  "Debian GNU/Linux 9")
+    echo "debian 9"
+    CONTROLDEP="Depends: libncurses5, libncursesw5, libudev1"
+    ;;
+
+  "Debian GNU/Linux 10")
+    echo "debian 10"
+    CONTROLDEP="Depends: libncurses6, libncursesw6, libudev1"
+    ;;
+esac
+
 # try to get the latest code
 UTIL_LINUX_SRC=util-linux
 if [[ -d "$UTIL_LINUX_SRC" ]]; then
@@ -35,16 +50,21 @@ GITVERSION=$(./tools/git-version-gen)
 ./configure --enable-irqtop --enable-lsirq
 make all -j $CPUS
 rm -f irqtop lsirq lsblk
+
+# get config options from config.h
+CONFIG_OPTS=`grep -w "#define" config.h | grep HAVE | awk '{print "-D"$2"="$3}' | tr "\n" " "`
+
 # staticly build to avoid libsmartcols.so.X conflict
-gcc sys-utils/irqtop.c sys-utils/irq-common.c .libs/libsmartcols.a -g -o irqtop -I include -I libsmartcols/src -DHAVE_NANOSLEEP -DHAVE_LOCALE_H -DHAVE_WIDECHAR -DHAVE_NCURSES_H -DHAVE_FSYNC -DPACKAGE_STRING="0.1" -D_GNU_SOURCE -DHAVE_DECL_CPU_ALLOC -lncurses
-gcc sys-utils/lsirq.c sys-utils/irq-common.c .libs/libsmartcols.a -g -o lsirq -I include -I libsmartcols/src -DHAVE_NANOSLEEP -DHAVE_LOCALE_H -DHAVE_WIDECHAR -DHAVE_NCURSES_H -DHAVE_FSYNC -DPACKAGE_STRING="0.1" -D_GNU_SOURCE -DHAVE_DECL_CPU_ALLOC -lncurses
-gcc misc-utils/lsblk.c misc-utils/lsblk-properties.c misc-utils/lsblk-devtree.c misc-utils/lsblk-mnt.c .libs/libmount.a .libs/libsmartcols.a .libs/libuuid.a .libs/libblkid.a -g -o lsblk -I include -I libblkid/src -I libsmartcols/src -I libmount/src -DHAVE_NANOSLEEP -DHAVE_LOCALE_H -DHAVE_WIDECHAR -DHAVE_NCURSES_H -DHAVE_FSYNC -DPACKAGE_STRING="0.1" -D_GNU_SOURCE -DHAVE_DECL_CPU_ALLOC -lncurses
+gcc sys-utils/irqtop.c sys-utils/irq-common.c .libs/libsmartcols.a -g -o irqtop -I include -I libsmartcols/src -lncurses -DPACKAGE_STRING="0.1" -D_GNU_SOURCE $CONFIG_OPTS
+gcc sys-utils/lsirq.c sys-utils/irq-common.c .libs/libsmartcols.a -g -o lsirq -I include -I libsmartcols/src -lncurses -DPACKAGE_STRING="0.1" -D_GNU_SOURCE $CONFIG_OPTS
+gcc misc-utils/lsblk.c misc-utils/lsblk-properties.c misc-utils/lsblk-devtree.c misc-utils/lsblk-mnt.c .libs/libmount.a .libs/libsmartcols.a .libs/libuuid.a .libs/libblkid.a -g -o lsblk -I include -I libblkid/src -I libsmartcols/src -I libmount/src -ludev -DPACKAGE_STRING="0.1" -D_GNU_SOURCE $CONFIG_OPTS
 
 # start to copy target files
 cd $RELEASE_DIR
 mkdir -p $BUILD_DIR/DEBIAN
 cp control $BUILD_DIR/DEBIAN/control
 sed -i "s/^Version:.*$/Version: $GITVERSION/" $BUILD_DIR/DEBIAN/control
+echo $CONTROLDEP >> $BUILD_DIR/DEBIAN/control
 
 mkdir -p $BIN_DIR
 cp $UTIL_LINUX_SRC/irqtop $BIN_DIR
