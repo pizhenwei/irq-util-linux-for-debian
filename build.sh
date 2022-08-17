@@ -14,6 +14,11 @@ case $ISSUENET in
     echo "debian 10"
     CONTROLDEP="Depends: libncurses6, libncursesw6, libudev1"
     ;;
+
+  "Debian GNU/Linux 11")
+    echo "debian 11"
+    CONTROLDEP="Depends: libncurses6, libncursesw6, libudev1"
+    ;;
 esac
 
 # try to get the latest code
@@ -28,7 +33,7 @@ else
     git clone https://github.com/util-linux/util-linux.git
 fi
 
-apt-get install -y asciidoctor bison flex gettext
+apt-get install -y asciidoctor bison flex gettext autopoint autoconf libtool automake pkg-config libncursesw5-dev make libudev-dev
 
 CPUS=$(cat /proc/cpuinfo | grep processor | wc -l)
 RELEASE_DIR=`pwd`
